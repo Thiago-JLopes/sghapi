@@ -1,9 +1,6 @@
 package com.example.sghapi.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,5 +19,12 @@ public class Hospedagem {
 
     private LocalDateTime CheckInReal;
     private LocalDateTime CheckOutReal;
-    private Float gatos;
+    private Float gastos;
+
+    @ManyToOne
+    private Funcionario funcionario;
+
+    @OneToOne
+    private Reserva reserva;
+
 }

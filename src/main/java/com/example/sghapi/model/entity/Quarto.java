@@ -1,9 +1,6 @@
 package com.example.sghapi.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,5 +16,11 @@ public class Quarto {
     private Long id;
 
     private Integer numero;
-    private Boolean diponibilidade;
+    private Boolean disponibilidade;
+
+    @ManyToOne
+    private Hotel hotel;
+
+    @ManyToOne
+    private Categoria categoria;
 }
