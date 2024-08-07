@@ -1,6 +1,6 @@
 package com.example.sghapi.model.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +17,8 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime dataCheckIn;
-    private LocalDateTime dataCheckOut;
+    private String dataCheckIn;
+    private String dataCheckOut;
     private Integer qntHospedes;
     private String status;
 

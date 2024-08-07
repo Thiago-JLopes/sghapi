@@ -1,6 +1,6 @@
 package com.example.sghapi.model.entity;
 
-import jakarta.persistence.Entity;
+import javax.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ public class Cliente extends  Pessoa{
     private Integer numero;
     private String cep;
     private String cidade;
-    private LocalDate dataNascimento;
+    private String dataNascimento;
     private String telefone;
 
 }

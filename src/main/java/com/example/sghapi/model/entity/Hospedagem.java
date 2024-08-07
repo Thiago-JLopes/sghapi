@@ -1,6 +1,6 @@
 package com.example.sghapi.model.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +17,8 @@ public class Hospedagem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime CheckInReal;
-    private LocalDateTime CheckOutReal;
+    private String CheckInReal;
+    private String CheckOutReal;
     private Float gastos;
 
     @ManyToOne
