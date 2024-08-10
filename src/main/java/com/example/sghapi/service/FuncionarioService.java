@@ -41,6 +41,12 @@ public class FuncionarioService {
         if(funcionario.getNome() == null || funcionario.getNome().trim().equals("")){
             throw new RegraNegocioException("Nome inválido");
         }
+        if(funcionario.getEmail() == null || funcionario.getEmail().trim().equals("")){
+            throw new RegraNegocioException("Email inválido");
+        }
+        if(funcionario.getSenha() == null || funcionario.getSenha().trim().equals("")){
+            throw new RegraNegocioException("Senha inválida");
+        }
         if(funcionario.getMatricula() == null || funcionario.getMatricula().trim().equals("")){
             throw new RegraNegocioException("Matrícula inválida");
         }

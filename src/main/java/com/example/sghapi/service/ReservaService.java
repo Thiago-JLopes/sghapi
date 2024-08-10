@@ -35,4 +35,25 @@ public class ReservaService {
         Objects.requireNonNull(reserva.getId());
         repository.delete(reserva);
     }
+
+    public void validar(Reserva reserva) {
+        if(reserva.getDataCheckIn() == null) {
+            throw new IllegalArgumentException("Data de check-in inválida");
+        }
+        if(reserva.getDataCheckOut() == null) {
+            throw new IllegalArgumentException("Data de check-out inválida");
+        }
+        if(reserva.getQntHospedes() <= 0) {
+            throw new IllegalArgumentException("Quantidade de hóspedes inválida");
+        }
+        if (reserva.getStatus() == null) {
+            throw new IllegalArgumentException("Status inválido");
+        }
+        if(reserva.getQuarto() == null) {
+            throw new IllegalArgumentException("Quarto inválido");
+        }
+        if(reserva.getCliente() == null) {
+            throw new IllegalArgumentException("Cliente inválido");
+        }
+    }
 }

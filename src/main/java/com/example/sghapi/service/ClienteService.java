@@ -48,6 +48,9 @@ public class ClienteService {
         if(cliente.getEmail() == null || cliente.getEmail().trim().equals("")){
             throw new RegraNegocioException("Email inválido");
         }
+        if(cliente.getSenha() == null || cliente.getSenha().trim().equals("")) {
+            throw new RegraNegocioException("Senha inválida.");
+        }
         if(cliente.getDataNascimento() == null){
             throw new RegraNegocioException("Data de nascimento inválida");
         }

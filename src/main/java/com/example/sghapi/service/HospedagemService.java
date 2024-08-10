@@ -28,6 +28,7 @@ public class HospedagemService {
 
     @Transactional
     public Hospedagem salvar(Hospedagem hospedagem){
+        validar(hospedagem);
         return repository.save(hospedagem);
     }
 
@@ -35,5 +36,23 @@ public class HospedagemService {
     public void excluir(Hospedagem hospedagem){
         Objects.requireNonNull(hospedagem.getId());
         repository.delete(hospedagem);
+    }
+
+    public void validar(Hospedagem hospedagem){
+        if(hospedagem.getCheckInReal() == null) {
+            throw new RegraNegocioException("Check-in inválido");
+        }
+        if(hospedagem.getCheckOutReal() == null) {
+            throw new RegraNegocioException("Check-out inválido");
+        }
+        if(hospedagem.getGastos() < 0) {
+            throw new RegraNegocioException("Gastos inválidos");
+        }
+        if (hospedagem.getFuncionario() == null) {
+            throw new RegraNegocioException("Funcionário inválido");
+        }
+        if (hospedagem.getReserva() == null) {
+            throw new RegraNegocioException("Reserva inválida");
+        }
     }
 }

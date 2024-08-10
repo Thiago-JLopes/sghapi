@@ -28,6 +28,7 @@ public class HotelService {
 
     @Transactional
     public Hotel salvar(Hotel hotel){
+        validar(hotel);
         return repository.save(hotel);
     }
 

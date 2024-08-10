@@ -41,7 +41,7 @@ public class CategoriaService {
         if(categoria.getPreco() < 0) {
             throw new IllegalArgumentException("Preço inválido");
         }
-        if(categoria.getDescricao().isEmpty() || categoria.getDescricao() == null) {
+        if(categoria.getDescricao().isEmpty()) {
             throw new IllegalArgumentException("Descrição inválida");
         }
         if(categoria.getQntCamaIndividual() < 0) {

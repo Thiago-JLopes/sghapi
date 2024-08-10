@@ -27,11 +27,27 @@ public class QuartoService {
 
     @Transactional
     public Quarto salvar(Quarto quarto){
+        validar(quarto);
         return repository.save(quarto);
     }
 
     @Transactional
     public void excluir(Quarto quarto){
         repository.delete(quarto);
+    }
+
+    public void validar(Quarto quarto){
+        if(quarto.getNumero() == null || quarto.getNumero() < 0){
+            throw new RegraNegocioException("Número inválido");
+        }
+        if(quarto.getDisponibilidade() == null){
+            throw new RegraNegocioException("Disponibilidade inválida");
+        }
+        if(quarto.getCategoria() == null){
+            throw new RegraNegocioException("Categoria inválida");
+        }
+        if (quarto.getHotel() == null) {
+            throw new RegraNegocioException("Hotel inválido");
+        }
     }
 }
