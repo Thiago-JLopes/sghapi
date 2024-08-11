@@ -69,6 +69,20 @@ public class ReservaController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Reserva> reserva = service.getReservaById(id);
+        if(!reserva.isPresent()){
+            return new ResponseEntity("reserva não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(reserva.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Reserva converter(ReservaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Reserva reserva = modelMapper.map(dto, Reserva.class);
