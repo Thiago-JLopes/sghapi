@@ -2,10 +2,14 @@ package com.example.sghapi.api.controller;
 
 import com.example.sghapi.api.dto.ClienteDTO;
 import com.example.sghapi.api.dto.QuartoDTO;
+import com.example.sghapi.model.entity.Categoria;
 import com.example.sghapi.model.entity.Hotel;
 import com.example.sghapi.model.entity.Quarto;
+import com.example.sghapi.service.CategoriaService;
+import com.example.sghapi.service.HotelService;
 import com.example.sghapi.service.QuartoService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,8 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class QuartoController {
     private final QuartoService service;
+    private final HotelService hotelService;
+    private final CategoriaService categoriaService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -34,5 +40,27 @@ public class QuartoController {
             return new ResponseEntity("quarto não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(quarto.map(QuartoDTO::create));
+    }
+
+    public Quarto  converter(QuartoDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Quarto quarto = modelMapper.map(dto, Quarto.class);
+        if(dto.getIdHotel()!= null) {
+            Optional<Hotel> hotel = hotelService.getHotelById(dto.getIdHotel());
+            if (!hotel.isPresent()) {
+                quarto.setHotel(null);
+            } else {
+                quarto.setHotel(hotel.get());
+            }
+        }
+        if(dto.getIdCategoria() != null) {
+            Optional<Categoria> categoria = categoriaService.getCategoriaById(dto.getIdCategoria());
+            if (!categoria.isPresent()) {
+                quarto.setCategoria(null);
+            } else {
+                quarto.setCategoria(categoria.get());
+            }
+        }
+        return quarto;
     }
 }

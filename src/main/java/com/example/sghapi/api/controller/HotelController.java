@@ -7,6 +7,7 @@ import com.example.sghapi.model.entity.Hotel;
 import com.example.sghapi.service.ClienteService;
 import com.example.sghapi.service.HotelService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,5 +36,11 @@ public class HotelController {
             return new ResponseEntity("hotel não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(hotel.map(HotelDTO::create));
+    }
+
+    public Hotel converter(HotelDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Hotel hotel = modelMapper.map(dto, Hotel.class);
+        return hotel;
     }
 }
