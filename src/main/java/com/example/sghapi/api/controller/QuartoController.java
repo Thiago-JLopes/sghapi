@@ -54,6 +54,21 @@ public class QuartoController {
         }
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, QuartoDTO dto) {
+        if(!service.getQuartoById(id).isPresent()){
+            return new ResponseEntity("quarto não encontrado", HttpStatus.NOT_FOUND);
+        }
+        try {
+            Quarto quarto = converter(dto);
+            quarto.setId(id);
+            service.salvar(quarto);
+            return ResponseEntity.ok(quarto);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Quarto  converter(QuartoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Quarto quarto = modelMapper.map(dto, Quarto.class);

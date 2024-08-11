@@ -54,6 +54,21 @@ public class ReservaController {
         }
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, ReservaDTO dto) {
+        if(!service.getReservaById(id).isPresent()){
+            return new ResponseEntity("reserva não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            Reserva reserva = converter(dto);
+            reserva.setId(id);
+            service.salvar(reserva);
+            return ResponseEntity.ok(reserva);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Reserva converter(ReservaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Reserva reserva = modelMapper.map(dto, Reserva.class);
