@@ -2,6 +2,7 @@ package com.example.sghapi.api.controller;
 
 import com.example.sghapi.api.dto.ClienteDTO;
 import com.example.sghapi.api.dto.ReservaDTO;
+import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Cliente;
 import com.example.sghapi.model.entity.Quarto;
 import com.example.sghapi.model.entity.Reserva;
@@ -40,6 +41,17 @@ public class ReservaController {
             return new ResponseEntity("reserva não encontrada", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(reserva.map(ReservaDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(ReservaDTO dto) {
+        try {
+            Reserva reserva = converter(dto);
+            reserva = service.salvar(reserva);
+            return new ResponseEntity(reserva, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     public Reserva converter(ReservaDTO dto) {

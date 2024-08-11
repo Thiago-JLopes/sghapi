@@ -2,9 +2,8 @@ package com.example.sghapi.api.controller;
 
 import com.example.sghapi.api.dto.ClienteDTO;
 import com.example.sghapi.api.dto.HotelDTO;
-import com.example.sghapi.model.entity.Cliente;
+import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Hotel;
-import com.example.sghapi.service.ClienteService;
 import com.example.sghapi.service.HotelService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -36,6 +35,17 @@ public class HotelController {
             return new ResponseEntity("hotel não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(hotel.map(HotelDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(HotelDTO dto) {
+        try {
+            Hotel hotel = converter(dto);
+            hotel = service.salvar(hotel);
+            return new ResponseEntity(hotel, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     public Hotel converter(HotelDTO dto) {
