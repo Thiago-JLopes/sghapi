@@ -1,12 +1,11 @@
 package com.example.sghapi.api.controller;
 
 import com.example.sghapi.api.dto.CategoriaDTO;
-import com.example.sghapi.api.dto.ClienteDTO;
+import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Categoria;
-import com.example.sghapi.model.entity.Cliente;
 import com.example.sghapi.service.CategoriaService;
-import com.example.sghapi.service.ClienteService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +35,54 @@ public class CategoriaController {
             return new ResponseEntity("categoria não encontrada", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(categoria.map(CategoriaDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(CategoriaDTO dto) {
+        try {
+            Categoria categoria = converter(dto);
+            categoria = service.salvar(categoria);
+            return new ResponseEntity(categoria, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, CategoriaDTO dto) {
+        if (!service.getCategoriaById(id).isPresent()) {
+            return new ResponseEntity("Categoria não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            Categoria categoria = converter(dto);
+            categoria.setId(id);
+            service.salvar(categoria);
+            return ResponseEntity.ok(categoria);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Categoria> categoria = service.getCategoriaById(id);
+        if (!categoria.isPresent()) {
+            return new ResponseEntity("Categoria não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(categoria.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+
+    public Categoria converter(CategoriaDTO dto){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Categoria.class);
+
     }
 
 }
