@@ -1,12 +1,11 @@
 package com.example.sghapi.api.controller;
 
-import com.example.sghapi.api.dto.ClienteDTO;
 import com.example.sghapi.api.dto.FuncionarioDTO;
-import com.example.sghapi.model.entity.Cliente;
+import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Funcionario;
-import com.example.sghapi.service.ClienteService;
 import com.example.sghapi.service.FuncionarioService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,5 +34,50 @@ public class FuncionarioController {
             return new ResponseEntity("funcionario não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(funcionario.map(FuncionarioDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(FuncionarioDTO dto) {
+        try {
+            Funcionario funcionario = converter(dto);
+            funcionario = service.salvar(funcionario);
+            return new ResponseEntity(funcionario, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, FuncionarioDTO dto) {
+        if (!service.getFuncionarioById(id).isPresent()) {
+            return new ResponseEntity("Funcionario não encontrado", HttpStatus.NOT_FOUND);
+        }
+        try {
+            Funcionario funcionario = converter(dto);
+            funcionario.setId(id);
+            service.salvar(funcionario);
+            return ResponseEntity.ok(funcionario);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Funcionario> funcionario = service.getFuncionarioById(id);
+        if (!funcionario.isPresent()) {
+            return new ResponseEntity("Funcionario não encontrado", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(funcionario.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    public Funcionario converter(FuncionarioDTO dto){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Funcionario.class);
     }
 }
