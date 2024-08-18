@@ -1,6 +1,7 @@
 package com.example.sghapi.service;
 
 import com.example.sghapi.exception.RegraNegocioException;
+import com.example.sghapi.model.entity.Funcionario;
 import com.example.sghapi.model.entity.Hospedagem;
 import com.example.sghapi.model.repository.HospedagemRepository;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,10 @@ public class HospedagemService {
 
     public Optional<Hospedagem> getHospedagemById(Long id){
         return repository.findById(id);
+    }
+
+    public List<Hospedagem> getHospedagensByFuncionario(Optional<Funcionario> funcionario){
+        return repository.findByFuncionario(funcionario);
     }
 
     @Transactional

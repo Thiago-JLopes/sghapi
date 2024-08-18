@@ -1,9 +1,12 @@
 package com.example.sghapi.api.controller;
 
 import com.example.sghapi.api.dto.ClienteDTO;
+import com.example.sghapi.api.dto.ReservaDTO;
 import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Cliente;
+import com.example.sghapi.model.entity.Reserva;
 import com.example.sghapi.service.ClienteService;
+import com.example.sghapi.service.ReservaService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class ClienteController {
     private final ClienteService service;
+    private final ReservaService reservaService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -34,6 +38,16 @@ public class ClienteController {
             return new ResponseEntity("cliente não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(cliente.map(ClienteDTO::create));
+    }
+
+    @GetMapping("{id}/reservas")
+    public ResponseEntity getQuartos(@PathVariable("id") Long id) {
+        Optional<Cliente> cliente = service.getClienteById(id);
+        if(!cliente.isPresent()){
+            return new ResponseEntity("Cliente não encontrado", HttpStatus.NOT_FOUND);
+        }
+        List<Reserva> reservas = reservaService.getReservasByCliente(cliente);
+        return ResponseEntity.ok(reservas.stream().map(ReservaDTO::create).collect(Collectors.toList()));
     }
 
     @PostMapping()

@@ -17,10 +17,12 @@ public class HospedagemDTO {
     private LocalDateTime CheckOutReal;
     private Float gastos;
     private Long idFuncionario;
+    private String nomeFuncionario;
 
     public static HospedagemDTO create(Hospedagem hospedagem) {
         ModelMapper modelMapper = new ModelMapper();
         HospedagemDTO dto = modelMapper.map(hospedagem, HospedagemDTO.class);
+        dto.nomeFuncionario = hospedagem.getFuncionario().getNome();
         return dto;
     }
 }

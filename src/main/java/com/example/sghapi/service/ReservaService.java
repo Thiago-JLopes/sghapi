@@ -1,5 +1,7 @@
 package com.example.sghapi.service;
 
+import com.example.sghapi.model.entity.Cliente;
+import com.example.sghapi.model.entity.Quarto;
 import com.example.sghapi.model.entity.Reserva;
 import com.example.sghapi.model.repository.ReservaRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,14 @@ public class ReservaService {
 
     public Optional<Reserva> getReservaById(Long id){
         return repository.findById(id);
+    }
+
+    public List<Reserva> getReservasByQuarto(Optional<Quarto> quarto){
+        return repository.findByQuarto(quarto);
+    }
+
+    public List<Reserva> getReservasByCliente(Optional<Cliente> cliente){
+        return repository.findByCliente(cliente);
     }
 
     @Transactional

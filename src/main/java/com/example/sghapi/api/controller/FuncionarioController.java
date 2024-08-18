@@ -1,9 +1,12 @@
 package com.example.sghapi.api.controller;
 
 import com.example.sghapi.api.dto.FuncionarioDTO;
+import com.example.sghapi.api.dto.HospedagemDTO;
 import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Funcionario;
+import com.example.sghapi.model.entity.Hospedagem;
 import com.example.sghapi.service.FuncionarioService;
+import com.example.sghapi.service.HospedagemService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class FuncionarioController {
     private final FuncionarioService service;
+    private final HospedagemService hospedagemService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -34,6 +38,16 @@ public class FuncionarioController {
             return new ResponseEntity("funcionario não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(funcionario.map(FuncionarioDTO::create));
+    }
+
+    @GetMapping("{id}/hospedagens")
+    public ResponseEntity getHospedagens(@PathVariable("id") Long id){
+        Optional<Funcionario> funcionario = service.getFuncionarioById(id);
+        if(!funcionario.isPresent()){
+            return new ResponseEntity("Funcionario não encontrado", HttpStatus.NOT_FOUND);
+        }
+        List<Hospedagem> hospedagems = hospedagemService.getHospedagensByFuncionario(funcionario);
+        return ResponseEntity.ok(hospedagems.stream().map(HospedagemDTO::create).collect(Collectors.toList()));
     }
 
     @PostMapping()

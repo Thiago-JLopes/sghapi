@@ -1,9 +1,12 @@
 package com.example.sghapi.api.controller;
 
 import com.example.sghapi.api.dto.CategoriaDTO;
+import com.example.sghapi.api.dto.QuartoDTO;
 import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Categoria;
+import com.example.sghapi.model.entity.Quarto;
 import com.example.sghapi.service.CategoriaService;
+import com.example.sghapi.service.QuartoService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class CategoriaController {
     private final CategoriaService service;
+    private final QuartoService quartoService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -35,6 +39,16 @@ public class CategoriaController {
             return new ResponseEntity("categoria não encontrada", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(categoria.map(CategoriaDTO::create));
+    }
+
+    @GetMapping("{id}/quartos")
+    public ResponseEntity getQuartos(@PathVariable("id") Long id) {
+        Optional<Categoria> categoria = service.getCategoriaById(id);
+        if(!categoria.isPresent()){
+            return new ResponseEntity("Categoria não encontrada", HttpStatus.NOT_FOUND);
+        }
+        List<Quarto> quartos = quartoService.getQuartosByCategoria(categoria);
+        return ResponseEntity.ok(quartos.stream().map(QuartoDTO::create).collect(Collectors.toList()));
     }
 
     @PostMapping()

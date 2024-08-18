@@ -1,14 +1,16 @@
 package com.example.sghapi.api.controller;
 
-import com.example.sghapi.api.dto.ClienteDTO;
 import com.example.sghapi.api.dto.QuartoDTO;
+import com.example.sghapi.api.dto.ReservaDTO;
 import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Categoria;
 import com.example.sghapi.model.entity.Hotel;
 import com.example.sghapi.model.entity.Quarto;
+import com.example.sghapi.model.entity.Reserva;
 import com.example.sghapi.service.CategoriaService;
 import com.example.sghapi.service.HotelService;
 import com.example.sghapi.service.QuartoService;
+import com.example.sghapi.service.ReservaService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ public class QuartoController {
     private final QuartoService service;
     private final HotelService hotelService;
     private final CategoriaService categoriaService;
+    private final ReservaService reservaService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -41,6 +44,16 @@ public class QuartoController {
             return new ResponseEntity("quarto não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(quarto.map(QuartoDTO::create));
+    }
+
+    @GetMapping("{id}/reservas")
+    public ResponseEntity getQuartos(@PathVariable("id") Long id) {
+        Optional<Quarto> quarto = service.getQuartoById(id);
+        if(!quarto.isPresent()){
+            return new ResponseEntity("Quarto não encontrado", HttpStatus.NOT_FOUND);
+        }
+        List<Reserva> reservas = reservaService.getReservasByQuarto(quarto);
+        return ResponseEntity.ok(reservas.stream().map(ReservaDTO::create).collect(Collectors.toList()));
     }
 
     @PostMapping()

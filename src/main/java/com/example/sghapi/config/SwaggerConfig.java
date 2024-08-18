@@ -37,8 +37,8 @@ public class SwaggerConfig {
     }
 
     private Contact contact(){
-        return new Contact("Julia e Marina Condé Araújo"
+        return new Contact("Alfredo Lucas e Thiago Jose"
                 , "http://github.com/",
-                "julia.conde.araujo@gmail.com / marina.araujo.conde@gmail.com");
+                "alfredo.lucas@estudante.ufjf.br / thiago.jose@estudante.ufjf.br");
     }
 }
