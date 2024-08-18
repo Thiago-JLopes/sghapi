@@ -7,6 +7,7 @@ import com.example.sghapi.model.entity.Funcionario;
 import com.example.sghapi.model.entity.Hospedagem;
 import com.example.sghapi.service.FuncionarioService;
 import com.example.sghapi.service.HospedagemService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -20,18 +21,29 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/v1/funcionarios")
 @RequiredArgsConstructor
+@Api("Api de Funcionarios")
 @CrossOrigin
 public class FuncionarioController {
     private final FuncionarioService service;
     private final HospedagemService hospedagemService;
 
     @GetMapping()
+    @ApiOperation("Obter todos os funcionarios")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Todos funcionarios retornados com sucesso"),
+            @ApiResponse(code = 204, message = "Nenhum funcionario encontrado")
+    })
     public ResponseEntity get() {
         List<Funcionario> funcionarios = service.getFuncionarios();
         return ResponseEntity.ok(funcionarios.stream().map(FuncionarioDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
+    @ApiOperation("Obter funcionario")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Funcionario encontrado"),
+            @ApiResponse(code = 404, message = "Funcionario não encontrado")
+    })
     public ResponseEntity get(@PathVariable("id") Long id) {
         Optional<Funcionario> funcionario = service.getFuncionarioById(id);
         if(!funcionario.isPresent()){
@@ -41,7 +53,12 @@ public class FuncionarioController {
     }
 
     @GetMapping("{id}/hospedagens")
-    public ResponseEntity getHospedagens(@PathVariable("id") Long id){
+    @ApiOperation("Obter todas as hospedagens de um funcionario")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Hospedagens retornadas com sucesso"),
+            @ApiResponse(code = 404, message = "Funcionario não encontrado")
+    })
+    public ResponseEntity getHospedagens(@PathVariable("id") @ApiParam("Id do funcionario") Long id){
         Optional<Funcionario> funcionario = service.getFuncionarioById(id);
         if(!funcionario.isPresent()){
             return new ResponseEntity("Funcionario não encontrado", HttpStatus.NOT_FOUND);
@@ -51,7 +68,12 @@ public class FuncionarioController {
     }
 
     @PostMapping()
-    public ResponseEntity post(FuncionarioDTO dto) {
+    @ApiOperation("Salvar dados de um funcionario")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Funcionario salvo com sucesso"),
+            @ApiResponse(code = 400, message = "Erro ao salvar funcionario")
+    })
+    public ResponseEntity post(@RequestBody FuncionarioDTO dto) {
         try {
             Funcionario funcionario = converter(dto);
             funcionario = service.salvar(funcionario);
@@ -62,7 +84,14 @@ public class FuncionarioController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Long id, FuncionarioDTO dto) {
+    @ApiOperation("Atualizar um funcionario")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "funcionario atualizado com sucesso"),
+            @ApiResponse(code = 404, message = "funcionario não encontrado"),
+            @ApiResponse(code = 400, message = "Requisição inválida"),
+            @ApiResponse(code = 409, message = "Conflito na requisição")
+    })
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody FuncionarioDTO dto) {
         if (!service.getFuncionarioById(id).isPresent()) {
             return new ResponseEntity("Funcionario não encontrado", HttpStatus.NOT_FOUND);
         }
@@ -77,6 +106,12 @@ public class FuncionarioController {
     }
 
     @DeleteMapping("{id}")
+    @ApiOperation("Excluir um funcionario")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Funcionario excluído com sucesso"),
+            @ApiResponse(code = 404, message = "Funcionario não encontrado"),
+            @ApiResponse(code = 400, message = "Requisição inválida")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<Funcionario> funcionario = service.getFuncionarioById(id);
         if (!funcionario.isPresent()) {

@@ -11,6 +11,7 @@ import com.example.sghapi.service.CategoriaService;
 import com.example.sghapi.service.HotelService;
 import com.example.sghapi.service.QuartoService;
 import com.example.sghapi.service.ReservaService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/v1/quartos")
 @RequiredArgsConstructor
+@Api("Api de Quartos")
 @CrossOrigin
 public class QuartoController {
     private final QuartoService service;
@@ -32,13 +34,22 @@ public class QuartoController {
     private final ReservaService reservaService;
 
     @GetMapping()
+    @ApiOperation("Obter todos os quartos")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Todos quartos retornados com sucesso"),
+            @ApiResponse(code = 204, message = "Nenhum quarto encontrado")
+    })
     public ResponseEntity get() {
         List<Quarto> quartos = service.getQuartos();
         return ResponseEntity.ok(quartos.stream().map(QuartoDTO::create).collect(Collectors.toList()));
     }
-
+    @ApiOperation("Obter dados de um Quarto")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Quarto encontrado"),
+            @ApiResponse(code = 404, message = "Quarto não encontrado")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable("id") Long id) {
+    public ResponseEntity get(@PathVariable("id") @ApiParam("Id do quarto") Long id) {
         Optional<Quarto> quarto = service.getQuartoById(id);
         if(!quarto.isPresent()){
             return new ResponseEntity("quarto não encontrado", HttpStatus.NOT_FOUND);
@@ -47,6 +58,11 @@ public class QuartoController {
     }
 
     @GetMapping("{id}/reservas")
+    @ApiOperation("Obter todas as reservas de um quarto")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Reservas retornadas com sucesso"),
+            @ApiResponse(code = 404, message = "Quarto não encontrado")
+    })
     public ResponseEntity getQuartos(@PathVariable("id") Long id) {
         Optional<Quarto> quarto = service.getQuartoById(id);
         if(!quarto.isPresent()){
@@ -56,8 +72,13 @@ public class QuartoController {
         return ResponseEntity.ok(reservas.stream().map(ReservaDTO::create).collect(Collectors.toList()));
     }
 
+    @ApiOperation("Salva dados de um Quarto")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Quarto salvo com sucesso"),
+            @ApiResponse(code = 400, message = "Erro ao salvar quarto")
+    })
     @PostMapping()
-    public ResponseEntity post(QuartoDTO dto) {
+    public ResponseEntity post(@RequestBody QuartoDTO dto) {
         try {
             Quarto quarto = converter(dto);
             quarto = service.salvar(quarto);
@@ -68,7 +89,13 @@ public class QuartoController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Long id, QuartoDTO dto) {
+    @ApiOperation("Atualiza dados de um Quarto")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Quarto atualizado com sucesso"),
+            @ApiResponse(code = 404, message = "Quarto não encontrado"),
+            @ApiResponse(code = 400, message = "Erro ao atualizar quarto")
+    })
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody QuartoDTO dto) {
         if(!service.getQuartoById(id).isPresent()){
             return new ResponseEntity("quarto não encontrado", HttpStatus.NOT_FOUND);
         }
@@ -83,6 +110,12 @@ public class QuartoController {
     }
 
     @DeleteMapping("{id}")
+    @ApiOperation("Exclui um Quarto")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Quarto excluído com sucesso"),
+            @ApiResponse(code = 404, message = "Quarto não encontrado"),
+            @ApiResponse(code = 400, message = "Erro ao excluir quarto")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<Quarto> quarto = service.getQuartoById(id);
         if(!quarto.isPresent()){

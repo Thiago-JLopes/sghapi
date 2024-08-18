@@ -9,6 +9,7 @@ import com.example.sghapi.model.entity.Reserva;
 import com.example.sghapi.service.ClienteService;
 import com.example.sghapi.service.QuartoService;
 import com.example.sghapi.service.ReservaService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/v1/reservas")
 @RequiredArgsConstructor
+@Api("Api de reservas")
 @CrossOrigin
 public class ReservaController {
     private final ReservaService service;
@@ -29,13 +31,24 @@ public class ReservaController {
     private final QuartoService quartoService;
 
     @GetMapping()
+    @ApiOperation("Obter todas as reservas")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Todas reservas retornadas com sucesso"),
+            @ApiResponse(code = 204, message = "Nenhuma reserva encontrada")
+    })
     public ResponseEntity get() {
         List<Reserva> reservas = service.getReservas();
         return ResponseEntity.ok(reservas.stream().map(ReservaDTO::create).collect(Collectors.toList()));
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable("id") Long id) {
+    @ApiOperation("Obter dados de uma Reserva")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Reserva encontrada"),
+            @ApiResponse(code = 404, message = "Reserva não encontrada")
+    })
+    public ResponseEntity get(@PathVariable("id") @ApiParam("Id da reserva") Long id) {
         Optional<Reserva> reserva = service.getReservaById(id);
         if(!reserva.isPresent()){
             return new ResponseEntity("reserva não encontrada", HttpStatus.NOT_FOUND);
@@ -44,7 +57,12 @@ public class ReservaController {
     }
 
     @PostMapping()
-    public ResponseEntity post(ReservaDTO dto) {
+    @ApiOperation("Salvar dados de uma Reserva")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Reserva salva com sucesso"),
+            @ApiResponse(code = 400, message = "Erro ao salvar Reserva")
+    })
+    public ResponseEntity post(@RequestBody ReservaDTO dto) {
         try {
             Reserva reserva = converter(dto);
             reserva = service.salvar(reserva);
@@ -55,7 +73,13 @@ public class ReservaController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Long id, ReservaDTO dto) {
+    @ApiOperation("Atualizar dados de uma Reserva")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Reserva atualizada com sucesso"),
+            @ApiResponse(code = 404, message = "Reserva não encontrada"),
+            @ApiResponse(code = 400, message = "Erro ao atualizar Reserva")
+    })
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody ReservaDTO dto) {
         if(!service.getReservaById(id).isPresent()){
             return new ResponseEntity("reserva não encontrada", HttpStatus.NOT_FOUND);
         }
@@ -70,6 +94,12 @@ public class ReservaController {
     }
 
     @DeleteMapping("{id}")
+    @ApiOperation("Excluir dados de uma Reserva")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Reserva excluída com sucesso"),
+            @ApiResponse(code = 404, message = "Reserva não encontrada"),
+            @ApiResponse(code = 400, message = "Erro ao excluir Reserva")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<Reserva> reserva = service.getReservaById(id);
         if(!reserva.isPresent()){

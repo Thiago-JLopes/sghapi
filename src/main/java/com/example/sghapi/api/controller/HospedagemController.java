@@ -11,6 +11,7 @@ import com.example.sghapi.service.ClienteService;
 import com.example.sghapi.service.FuncionarioService;
 import com.example.sghapi.service.HospedagemService;
 import com.example.sghapi.service.ReservaService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/v1/hospedagens")
 @RequiredArgsConstructor
+@Api("Api de hospedagens")
 @CrossOrigin
 public class HospedagemController {
     private final HospedagemService service;
@@ -31,13 +33,23 @@ public class HospedagemController {
     private final ReservaService reservaService;
 
     @GetMapping()
+    @ApiOperation("Obter todas as hospedagens")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Todas hospedagens retornadas com sucesso"),
+            @ApiResponse(code = 204, message = "Nenhuma hospedagem encontrada")
+    })
     public ResponseEntity get() {
         List<Hospedagem> hospedagems = service.getHospedagens();
         return ResponseEntity.ok(hospedagems.stream().map(HospedagemDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable("id") Long id) {
+    @ApiOperation("Obter dados de uma hospedagem")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Hospedagem encontrada"),
+            @ApiResponse(code = 404, message = "Hospedagem não encontrada")
+    })
+    public ResponseEntity get(@PathVariable("id") @ApiParam("Id da hospedagem") Long id) {
         Optional<Hospedagem> hospedagem = service.getHospedagemById(id);
         if(!hospedagem.isPresent()){
             return new ResponseEntity("hospedagem não encontrado", HttpStatus.NOT_FOUND);
@@ -45,8 +57,14 @@ public class HospedagemController {
         return ResponseEntity.ok(hospedagem.map(HospedagemDTO::create));
     }
 
+
     @PostMapping()
-    public ResponseEntity post(HospedagemDTO dto){
+    @ApiOperation("Salva dados de uma hospedagem")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Hospedagem salva com sucessp"),
+            @ApiResponse(code = 400, message = "Erro ao salvar curso")
+    })
+    public ResponseEntity post(@RequestBody HospedagemDTO dto){
         try{
             Hospedagem hospedagem = converter(dto);
             Reserva reserva = reservaService.salvar(hospedagem.getReserva());
@@ -59,7 +77,13 @@ public class HospedagemController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Long id, HospedagemDTO dto){
+    @ApiOperation("Atualiza dados de uma hospedagem")
+    @ApiResponses({
+            @ApiResponse(code = 202, message = "Hospedagem atualizada com sucesso"),
+            @ApiResponse(code = 400, message = "Erro ao atualizar hospedagem"),
+            @ApiResponse(code = 404, message = "Hospedagem não encontrada")
+    })
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody HospedagemDTO dto){
         if(!service.getHospedagemById(id).isPresent()){
             return new ResponseEntity("Hospedagem não encontrada", HttpStatus.NOT_FOUND);
         }
@@ -76,6 +100,11 @@ public class HospedagemController {
     }
 
     @DeleteMapping("{id}")
+    @ApiOperation("Exclui uma hospedagem")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Hospedagem excluída com sucesso"),
+            @ApiResponse(code = 404, message = "Hospedagem não encontrada")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id){
         Optional<Hospedagem> hospedagem = service.getHospedagemById(id);
         if(!hospedagem.isPresent()){

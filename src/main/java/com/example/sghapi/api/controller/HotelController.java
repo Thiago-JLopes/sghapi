@@ -5,6 +5,7 @@ import com.example.sghapi.api.dto.HotelDTO;
 import com.example.sghapi.exception.RegraNegocioException;
 import com.example.sghapi.model.entity.Hotel;
 import com.example.sghapi.service.HotelService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -18,18 +19,29 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/v1/hoteis")
 @RequiredArgsConstructor
+@Api("Api de Hoteis")
 @CrossOrigin
 public class HotelController {
     private final HotelService service;
 
     @GetMapping()
+    @ApiOperation("Obter todos os hoteis")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Todos hoteis retornados com sucesso"),
+            @ApiResponse(code = 204, message = "Nenhum hotel encontrado")
+    })
     public ResponseEntity get() {
         List<Hotel> hotels = service.getHotels();
         return ResponseEntity.ok(hotels.stream().map(HotelDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable("id") Long id) {
+    @ApiOperation("Obter hotel")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Hotel encontrado"),
+            @ApiResponse(code = 404, message = "Hotel não encontrado")
+    })
+    public ResponseEntity get(@PathVariable("id") @ApiParam("Id do hotel")Long id) {
         Optional<Hotel> hotel = service.getHotelById(id);
         if(!hotel.isPresent()){
             return new ResponseEntity("hotel não encontrado", HttpStatus.NOT_FOUND);
@@ -38,7 +50,12 @@ public class HotelController {
     }
 
     @PostMapping()
-    public ResponseEntity post(HotelDTO dto) {
+    @ApiOperation("Salvar dados de um hotel")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Hotel salvo com sucesso"),
+            @ApiResponse(code = 400, message = "Erro ao salvar hotel")
+    })
+    public ResponseEntity post(@RequestBody HotelDTO dto) {
         try {
             Hotel hotel = converter(dto);
             hotel = service.salvar(hotel);
@@ -49,7 +66,13 @@ public class HotelController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Long id, HotelDTO dto) {
+    @ApiOperation("Atualizar dados de um hotel")
+    @ApiResponses({
+            @ApiResponse(code = 202, message = "Hotel atualizado com sucesso"),
+            @ApiResponse(code = 400, message = "Erro ao atualizar hotel"),
+            @ApiResponse(code = 404, message = "Hotel não encontrado")
+    })
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody HotelDTO dto) {
         if(!service.getHotelById(id).isPresent()){
             return new ResponseEntity("hotel não encontrado", HttpStatus.NOT_FOUND);
         }
@@ -64,6 +87,12 @@ public class HotelController {
     }
 
     @DeleteMapping("{id}")
+    @ApiOperation("Excluir hotel")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Hotel excluído com sucesso"),
+            @ApiResponse(code = 404, message = "Hotel não encontrado"),
+            @ApiResponse(code = 400, message = "Erro ao excluir hotel")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<Hotel> hotel = service.getHotelById(id);
         if(!hotel.isPresent()){
