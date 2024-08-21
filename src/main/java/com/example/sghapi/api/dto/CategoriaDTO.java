@@ -3,11 +3,16 @@ package com.example.sghapi.api.dto;
 
 import com.example.sghapi.model.entity.Categoria;
 import com.example.sghapi.model.entity.Funcionario;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CategoriaDTO {
     private Long id;
-    private float preco;
+    private Float preco;
     private String descricao;
     private Integer qntCamaIndividual;
     private Integer qntCamaCasal;

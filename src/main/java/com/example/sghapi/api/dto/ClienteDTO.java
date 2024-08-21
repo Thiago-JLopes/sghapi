@@ -21,7 +21,7 @@ public class ClienteDTO {
     private Integer numero;
     private String cep;
     private String cidade;
-    private LocalDate dataNascimento;
+    private String dataNascimento;
     private String telefone;
 
     public static ClienteDTO create(Cliente cliente) {

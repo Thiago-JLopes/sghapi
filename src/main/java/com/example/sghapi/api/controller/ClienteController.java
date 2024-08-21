@@ -91,7 +91,7 @@ public class ClienteController {
             @ApiResponse(code = 400, message = "Requisição inválida"),
             @ApiResponse(code = 409, message = "Conflito na requisição")
     })
-    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody ClienteDTO dto) {
+    public ResponseEntity atualizar(@PathVariable("id") Long id, ClienteDTO dto) {
         if (!service.getClienteById(id).isPresent()) {
             return new ResponseEntity("Cliente não encontrado", HttpStatus.NOT_FOUND);
         }

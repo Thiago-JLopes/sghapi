@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class HospedagemDTO {
     private Long id;
-    private LocalDateTime CheckInReal;
-    private LocalDateTime CheckOutReal;
+    private String CheckInReal;
+    private String CheckOutReal;
     private Float gastos;
     private Long idFuncionario;
     private String nomeFuncionario;
