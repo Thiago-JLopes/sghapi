@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 @Api("Api de Usuários")
 @CrossOrigin
 public class UsuarioController {
+
+    private final PasswordEncoder passwordEncoder;
     private final UsuarioService service;
 
     @GetMapping()
@@ -56,7 +59,15 @@ public class UsuarioController {
     })
     public ResponseEntity post(@RequestBody UsuarioDTO dto) {
         try {
+            if(dto.getSenha() == null || dto.getSenha().trim().equals("") || dto.getSenhaRepeticao() == null || dto.getSenhaRepeticao().trim().equals("")){
+                return ResponseEntity.badRequest().body("Senha inválida");
+            }
+            if(!dto.getSenha().equals(dto.getSenhaRepeticao())){
+                return ResponseEntity.badRequest().body("Senhas não conferem");
+            }
             Usuario usuario = converter(dto);
+            String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
+            usuario.setSenha(senhaCriptografada);
             usuario = service.salvar(usuario);
             return new ResponseEntity(usuario, HttpStatus.CREATED);
         } catch (RegraNegocioException e) {
@@ -77,6 +88,12 @@ public class UsuarioController {
             return new ResponseEntity("Usuario não encontrado", HttpStatus.NOT_FOUND);
         }
         try {
+            if(dto.getSenha() == null || dto.getSenha().trim().equals("") || dto.getSenhaRepeticao() == null || dto.getSenhaRepeticao().trim().equals("")){
+                return ResponseEntity.badRequest().body("Senha inválida");
+            }
+            if(!dto.getSenha().equals(dto.getSenhaRepeticao())){
+                return ResponseEntity.badRequest().body("Senhas não conferem");
+            }
             Usuario usuario = converter(dto);
             usuario.setId(id);
             service.salvar(usuario);

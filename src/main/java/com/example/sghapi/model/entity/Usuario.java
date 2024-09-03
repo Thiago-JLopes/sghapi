@@ -1,6 +1,7 @@
 package com.example.sghapi.model.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario {
@@ -20,5 +22,5 @@ public class Usuario {
     private  String login;
     private String cpf;
     private String senha;
-    private Boolean admin;
+    private boolean admin;
 }
