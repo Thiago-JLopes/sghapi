@@ -28,4 +28,48 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsService(usuarioService)
                 .passwordEncoder(passwordEncoder());
     }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .cors().disable()
+                .csrf().disable()
+                    .authorizeRequests()
+                        .antMatchers("/api/v1/categorias/**")
+                            .hasAnyRole("ADMIN")
+                        .antMatchers("/api/v1/clientes/**")
+                            .authenticated()
+                        .antMatchers("/api/v1/funcionarios/**")
+                            .hasAnyRole("ADMIN")
+                        .antMatchers("/api/v1/hospedagens/**")
+                            .authenticated()
+                        .antMatchers("/api/v1/hoteis/**")
+                            .permitAll()
+                        .antMatchers("/api/v1/quartos/**")
+                            .permitAll()
+                        .antMatchers("/api/v1/reservas/**")
+                            .authenticated()
+                        //.antMatchers("/api/v1/vagas/**")
+                            //.hasAnyRole("USER", "ADMIN")
+                        .antMatchers( "/api/v1/usuarios/**")
+                            .permitAll()
+                        .anyRequest().authenticated()
+                    .and()
+                        .sessionManagement()
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    //.and()
+                      //  .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+        ;
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(
+                "/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**");
+    }
 }
