@@ -7,6 +7,7 @@ import com.example.sghapi.service.UsuarioService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,13 +19,18 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/usuarios")
-@RequiredArgsConstructor
 @Api("Api de Usuários")
 @CrossOrigin
 public class UsuarioController {
 
-    private final PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     private final UsuarioService service;
+
+
+    public UsuarioController(UsuarioService service, PasswordEncoder passwordEncoder) {
+        this.service = service;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping()
     @ApiOperation("Obter todos os usuarios")
