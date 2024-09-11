@@ -112,7 +112,7 @@ public class UsuarioController {
             @ApiResponse(code = 400, message = "Requisição inválida"),
             @ApiResponse(code = 409, message = "Conflito na requisição")
     })
-    public ResponseEntity atualizar(@PathVariable("id") Long id, UsuarioDTO dto) {
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody UsuarioDTO dto) {
         if (!service.getUsuarioById(id).isPresent()) {
             return new ResponseEntity("Usuario não encontrado", HttpStatus.NOT_FOUND);
         }
